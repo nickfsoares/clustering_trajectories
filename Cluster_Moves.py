@@ -39,3 +39,49 @@ move1['year']=year
 Move_October=move1[move1['month']=='10']
 Move_November=move1[move1['month']=='11']
 Move_December=move1[move1['month']=='12']
+
+###########################################################################################################################
+#FUNCTIONS
+
+#######################################################################
+#funcao para criar uma array de fetores move.inertia_
+def inertia_array(Move_Data):
+    from sklearn.cluster import KMeans
+    k=1
+    inertia=[]
+    while (k<11):
+        kmeans=KMeans(n_clusters=k)
+        modelo=kmeans.fit(Move_Data.get(['lat','lon']))
+        inertia.append(modelo.inertia_)
+        k=k+1
+    return inertia 
+#######################################################################
+#funcao para plotar os gráficos do DataFrame identado
+def Inertia_Graph(Move_Data):
+    Error=inertia_array(Move_Data)
+    k=[]
+    for i in range(1,11,1):
+        k.append(i)
+    ax=sns.stripplot(k,Error,linewidth=3,size=10);
+    ax.set(xlabel="Number of Clusters",ylabel="Min_Squared_Error")
+    plt.title("The Elbow Method")
+    plt.show()
+###########################################################################
+#funcao para dividir o DF em k clusters
+def Move_lat_lon(k,MOVER):
+    from sklearn.cluster import KMeans
+    kmeans=KMeans(n_clusters=k)
+    kmeans.fit(MOVER.get(['lat','lon']))
+    
+    fig, (ax1,ax2) =plt.subplots(nrows=1,ncols=2,figsize=(15,6))
+
+    ax1.set_title("Original")
+    ax1.scatter(MOVER['lat'],MOVER['lon'],s=4)
+
+    ax2.set_title("Kmeans")
+    ax2.scatter(MOVER['lat'],MOVER['lon'],c=kmeans.labels_,s=4,cmap='rainbow')
+    plt.show()
+    return
+
+
+
