@@ -85,3 +85,31 @@ def Move_lat_lon(k,MOVER):
 
 
 
+
+from sklearn.cluster import KMeans as km
+from tqdm import tqdm_notebook as tqdm
+from sklearn.cluster import DBSCAN as dbs
+
+################################################################################
+#function for parameters of dbscan
+def params(df):
+  coords_df=df.get(['lat','lon'])
+  from sklearn.metrics import pairwise_distances
+  dist=pairwise_distances(coords_df.to_numpy())
+  p_eps=dist.max().max()
+  p_samples=len(coords_df)
+  print('Distancia máxima permitida: ', p_eps)
+  print('Numero de amostras total: ', p_samples)
+  return p_eps, p_samples
+
+################################################################################
+#function for ploting clusters based on parameters
+def plot_cluster(df_,p_eps,p_samples):
+  clustering= dbs(eps=p_eps,min_samples=p_samples,metric='euclidean',n_jobs=-1).fit(df_.get(['lat','lon']).to_numpy())
+  plt.scatter(df_['lat'],df_['lon'],c=clustering.labels_,s=4,cmap='rainbow')
+  plt.show()
+  return
+
+
+
+
